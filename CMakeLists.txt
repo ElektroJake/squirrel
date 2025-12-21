@@ -20,24 +20,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
 set(CMAKE_CXX_STANDARD 11)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-  add_compile_options(
-    "$<$<COMPILE_LANGUAGE:CXX>:-fno-rtti;-fno-exceptions>"
-    -fno-strict-aliasing
-    -Wall
-    -Wextra
-    -pedantic
-    -Wcast-qual
-    "$<$<CONFIG:Release>:-O3>"
-    "$<$<CONFIG:RelWithDebInfo>:-O3;-g>"
-    "$<$<CONFIG:MinSizeRel>:-Os>"
-    "$<$<CONFIG:Debug>:-pie;-gstabs;-g3;-Og>"
-    )
-elseif(MSVC)
-  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-endif()
-
 # Need to be defined here to be visible to squirrel.pc.in
 if(LONG_OUTPUT_NAMES)
   set(LIBSQUIRREL_NAME squirrel3)
@@ -145,4 +127,26 @@ if(NOT SQ_DISABLE_INSTALLER AND NOT SQ_DISABLE_CMAKE_INSTALLER)
     FILE "squirrel-targets.cmake"
     COMPONENT Development
     )
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+  target_compile_options(squirrel PRIVATE
+    "$<$<COMPILE_LANGUAGE:CXX>:-fno-rtti;-fno-exceptions>"
+    -fno-strict-aliasing
+    -Wall
+    -Wextra
+    -pedantic
+	-Wno-format-truncation
+	-Wno-implicit-fallthrough
+	-Wno-class-memaccess
+	-Wno-deprecated-copy
+    -Wno-cast-qual
+    "$<$<CONFIG:Release>:-O3>"
+    "$<$<CONFIG:RelWithDebInfo>:-O3;-g>"
+    "$<$<CONFIG:MinSizeRel>:-Os>"
+    "$<$<CONFIG:Debug>:-pie;-gstabs;-g3;-Og>"
+    )
+elseif(MSVC)
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
